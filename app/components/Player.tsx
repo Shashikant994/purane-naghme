@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Pause,
   Play,
@@ -61,6 +62,31 @@ export default function Player() {
   const repeatLabel =
     repeat === "one" ? "Repeat one" : repeat === "all" ? "Repeat all" : "Repeat off";
 
+  /* TV / media-key support: Google TV remotes send MediaPlayPause,
+     MediaTrackNext / MediaTrackPrevious; Space also toggles play. */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      const isFormEl =
+        !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "BUTTON");
+      if (e.key === "MediaPlayPause") {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.key === "MediaTrackNext") {
+        e.preventDefault();
+        next();
+      } else if (e.key === "MediaTrackPrevious") {
+        e.preventDefault();
+        prev();
+      } else if (e.code === "Space" && !isFormEl) {
+        e.preventDefault();
+        togglePlay();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [togglePlay, next, prev]);
+
   return (
     <>
       {/* ── Desktop version — glassmorphic floating pill ─────────────────── */}
@@ -98,6 +124,7 @@ export default function Player() {
               aria-label={isPlaying ? "Pause" : "Play"}
               onClick={togglePlay}
               disabled={!currentSong}
+              autoFocus
               className="mx-1 cursor-pointer rounded-full bg-gradient-to-b from-amber-300 to-amber-500 p-3 text-black shadow-[0_6px_20px_-4px_rgba(255,190,80,0.65),inset_0_1px_0_rgba(255,255,255,0.6)] transition-transform duration-200 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isPlaying ? (

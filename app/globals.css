@@ -192,3 +192,19 @@
 .safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 1.25rem);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   TV / Keyboard navigation — visible focus rings
+   Google TV remotes (DPAD) move focus like a keyboard; without a visible
+   focus indicator nobody can tell where they are. Amber ring = design-matched.
+   ───────────────────────────────────────────────────────────────────────── */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+[role="slider"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid rgba(255, 210, 122, 0.9);
+  outline-offset: 2px;
+  box-shadow: 0 0 18px rgba(255, 210, 122, 0.35);
+}
+
